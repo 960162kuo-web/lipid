@@ -189,7 +189,7 @@
         </section>
 
         <!-- 問卷表單 -->
-        <form id="quizForm" class="hidden space-y-8" novalidate>
+        <form id="quizForm" class="hidden space-y-8" novalidate autocomplete="off">
             <!-- 基本資訊區塊 -->
             <div class="card p-6 md:p-8 border-t-4 border-t-blue-500 animate-slide-up" style="animation-delay: 0.1s;">
                 <div class="flex items-center gap-2 mb-6">
@@ -200,19 +200,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-6">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">姓名 <span class="text-red-500">*</span></label>
-                        <input type="text" name="userName" class="input-field" placeholder="請輸入姓名" required>
+                        <input type="text" name="userName" class="input-field" placeholder="請輸入姓名" autocomplete="off" required>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">年齡 <span class="text-red-500">*</span></label>
-                        <input type="number" name="userAge" class="input-field" placeholder="請輸入年齡" min="0" required>
+                        <input type="number" name="userAge" class="input-field" placeholder="請輸入年齡" min="0" autocomplete="off" required>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">病歷號碼 <span class="text-red-500">*</span></label>
-                        <input type="text" name="medicalId" class="input-field" placeholder="請輸入病歷號" required>
+                        <input type="text" name="medicalId" class="input-field" placeholder="請輸入病歷號" autocomplete="off" required>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">科別 <span class="text-red-500">*</span></label>
-                        <select name="department" class="input-field" required>
+                        <select name="department" class="input-field" autocomplete="off" required>
                             <option value="" disabled selected>請選擇科別</option>
                             <option value="心內">心內</option>
                             <option value="神內">神內</option>
@@ -220,7 +220,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">收案類別 <span class="text-red-500">*</span></label>
-                        <select name="caseType" class="input-field" required>
+                        <select name="caseType" class="input-field" autocomplete="off" required>
                             <option value="" disabled selected>請選擇類別</option>
                             <option value="新收案">新收案</option>
                             <option value="追蹤1">追蹤1</option>
@@ -231,7 +231,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">腰圍 (公分) <span class="text-xs font-normal text-slate-400 ml-1">(選填)</span></label>
-                        <input type="number" name="waistline" class="input-field" placeholder="請輸入腰圍" min="0" step="0.1">
+                        <input type="number" name="waistline" class="input-field" placeholder="請輸入腰圍" min="0" step="0.1" autocomplete="off">
                     </div>
                 </div>
                 <div class="pt-2 border-t border-slate-100">
@@ -343,7 +343,7 @@
 
     <script>
         // 設定 API 網址
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8uZUXXuToOHbVLKreAYQ17jSgOpX06iXxbcr-gKoVUJkCPbFMZTeQuQ9AWDsAzCjJ-A/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIUzljFbUYaIXB4oTs8I8CIYpKa6lA3NIKwlx5qAFcRtWwwOF5_xiPht1pUkt9f76j/exec"; 
 
         // 用於追蹤目前評估紀錄的唯一識別碼與是否已提交過
         let currentRecordId = null;
