@@ -135,6 +135,21 @@
     <!-- 提示訊息框 -->
     <div id="toast">✅ 評估資料已成功同步至試算表！</div>
 
+    <!-- 自訂彈跳視窗 (Modal) -->
+    <div id="custom-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl border border-slate-100 transform transition-all">
+            <div class="flex items-center gap-3 mb-4">
+                <div id="modal-icon" class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-2xl shrink-0">⚠️</div>
+                <h3 id="modal-title" class="text-xl font-extrabold text-slate-800">提醒訊息</h3>
+            </div>
+            <div id="modal-message" class="text-slate-600 mb-8 leading-relaxed text-sm md:text-base whitespace-pre-line max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
+            <div id="modal-actions" class="flex gap-3 justify-end">
+                <button type="button" id="modal-cancel" class="hidden px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">返回填寫</button>
+                <button type="button" id="modal-confirm" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition shadow-md shadow-blue-500/20">確定</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 導航與標題 -->
     <header class="sticky-header py-4 px-6 mb-10">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
@@ -174,7 +189,7 @@
         </section>
 
         <!-- 問卷表單 -->
-        <form id="quizForm" class="hidden space-y-8">
+        <form id="quizForm" class="hidden space-y-8" novalidate>
             <!-- 基本資訊區塊 -->
             <div class="card p-6 md:p-8 border-t-4 border-t-blue-500 animate-slide-up" style="animation-delay: 0.1s;">
                 <div class="flex items-center gap-2 mb-6">
@@ -240,10 +255,14 @@
 
             <div id="questions-container" class="space-y-6"></div>
 
-            <div class="pt-8 pb-12 animate-fade-in" style="animation-delay: 0.5s;">
-                <button type="submit" id="submitBtn" class="btn-primary w-full text-white font-bold py-5 rounded-2xl shadow-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed text-lg tracking-wide flex items-center justify-center gap-2">
+            <div class="pt-8 pb-12 animate-fade-in flex flex-col sm:flex-row gap-4" style="animation-delay: 0.5s;">
+                <button type="button" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="sm:w-1/3 bg-white hover:bg-slate-50 text-slate-700 font-bold py-5 px-6 rounded-2xl shadow-md border border-slate-200 transition-all text-lg flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                    回頁面頂端
+                </button>
+                <button type="submit" id="submitBtn" class="sm:w-2/3 btn-primary text-white font-bold py-5 px-6 rounded-2xl shadow-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed text-lg tracking-wide flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                    提交評估，查看我的雷達圖
+                    <span id="submitBtnText">提交評估，查看我的雷達圖</span>
                 </button>
             </div>
         </form>
@@ -309,10 +328,14 @@
                 </div>
             </div>
 
-            <div class="text-center pt-4 pb-12 animate-fade-in" style="animation-delay: 0.4s;">
-                <button onclick="window.location.reload()" class="inline-flex items-center gap-2 text-slate-500 font-bold hover:text-blue-600 transition-colors bg-white px-6 py-3 rounded-full shadow-sm border border-slate-200 hover:shadow">
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4 pb-12 animate-fade-in" style="animation-delay: 0.4s;">
+                <button type="button" onclick="editQuiz()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-white font-bold bg-blue-600 hover:bg-blue-700 transition-colors px-8 py-3.5 rounded-full shadow-md hover:shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    修改評估內容
+                </button>
+                <button type="button" onclick="window.location.reload()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-slate-600 font-bold hover:text-blue-600 transition-colors bg-white px-8 py-3.5 rounded-full shadow-sm border border-slate-200 hover:shadow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                    重新進行測驗
+                    重新進行測驗 (新個案)
                 </button>
             </div>
         </section>
@@ -321,6 +344,42 @@
     <script>
         // 設定 API 網址
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8uZUXXuToOHbVLKreAYQ17jSgOpX06iXxbcr-gKoVUJkCPbFMZTeQuQ9AWDsAzCjJ-A/exec"; 
+
+        // 用於追蹤目前評估紀錄的唯一識別碼與是否已提交過
+        let currentRecordId = null;
+        let isEditingMode = false;
+
+        // 自訂彈跳視窗控制函式
+        function showModal({ title = "提醒訊息", message = "", icon = "⚠️", showCancel = false, confirmText = "確定", cancelText = "取消", onConfirm = null, onCancel = null }) {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('modal-icon').innerText = icon;
+            
+            const confirmBtn = document.getElementById('modal-confirm');
+            const cancelBtn = document.getElementById('modal-cancel');
+            
+            confirmBtn.innerText = confirmText;
+            cancelBtn.innerText = cancelText;
+            
+            if (showCancel) {
+                cancelBtn.classList.remove('hidden');
+            } else {
+                cancelBtn.classList.add('hidden');
+            }
+            
+            confirmBtn.onclick = () => {
+                modal.classList.add('hidden');
+                if (onConfirm) onConfirm();
+            };
+            
+            cancelBtn.onclick = () => {
+                modal.classList.add('hidden');
+                if (onCancel) onCancel();
+            };
+            
+            modal.classList.remove('hidden');
+        }
 
         const categories = {
             social: { title: "正向社會連結與靈性", color: "#3b82f6", questions: [1, 3, 5, 7, 9] },
@@ -387,9 +446,24 @@
         }
 
         function startQuiz() {
+            // 產生本筆評估專屬的唯一識別碼 (供後續修改更新同筆資料使用)
+            if (!currentRecordId) {
+                currentRecordId = 'REC_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+            }
             document.getElementById('intro-screen').classList.add('hidden');
             document.getElementById('quizForm').classList.remove('hidden');
             renderQuestions();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function editQuiz() {
+            isEditingMode = true;
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quizForm').classList.remove('hidden');
+            const submitBtnText = document.getElementById('submitBtnText');
+            if (submitBtnText) {
+                submitBtnText.innerText = "更新評估，查看我的雷達圖";
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -460,24 +534,70 @@
             e.preventDefault();
             const formData = new FormData(e.target);
 
-            // 檢查是否所有單選題都有填寫，並記錄缺漏項目
-            let missingItems = [];
+            // 檢查必填項目是否都有填寫，並記錄缺漏項目
+            let missingRequired = [];
             
-            if (!formData.get('gender')) {
-                missingItems.push("性別");
-            }
+            if (!formData.get('userName')?.trim()) missingRequired.push("姓名");
+            if (!formData.get('userAge')?.trim()) missingRequired.push("年齡");
+            if (!formData.get('medicalId')?.trim()) missingRequired.push("病歷號碼");
+            if (!formData.get('department')) missingRequired.push("科別");
+            if (!formData.get('caseType')) missingRequired.push("收案類別");
+            if (!formData.get('gender')) missingRequired.push("性別");
             
             questionsData.forEach(q => {
                 if (!formData.get(`q${q.id}`)) {
-                    missingItems.push(`第${q.id}題`);
+                    missingRequired.push(`第${q.id}題`);
                 }
             });
 
-            if (missingItems.length > 0) {
-                alert(`您還有項目尚未填寫完成：\n\n${missingItems.join('、')} 未填寫。\n\n請檢查並完成作答！`);
+            const waistlineVal = formData.get('waistline')?.trim();
+
+            // 若有必填項目未填寫，阻擋提交並提示（同時提醒選填的腰圍）
+            if (missingRequired.length > 0) {
+                let msg = `您還有以下必填項目尚未完成：\n\n${missingRequired.join('、')} 未填寫。`;
+                if (!waistlineVal) {
+                    msg += `\n\n另外提醒您：「腰圍 (選填)」目前也尚未填寫。`;
+                }
+                msg += `\n\n請檢查並完成作答！`;
+                
+                showModal({
+                    title: "尚有項目未填寫",
+                    message: msg,
+                    icon: "⚠️",
+                    showCancel: false,
+                    confirmText: "返回檢查"
+                });
                 return; 
             }
 
+            // 若必填皆已完成，但選填的「腰圍」未填寫，跳出提醒確認是否繼續提交
+            if (!waistlineVal) {
+                showModal({
+                    title: "腰圍尚未填寫提醒",
+                    message: "提醒您：「腰圍 (選填)」欄位目前尚未填寫。\n\n請問您要返回補填，還是直接提交評估？",
+                    icon: "💡",
+                    showCancel: true,
+                    confirmText: "直接提交",
+                    cancelText: "返回補填",
+                    onConfirm: () => {
+                        processSubmission(formData);
+                    },
+                    onCancel: () => {
+                        const waistInput = document.querySelector('input[name="waistline"]');
+                        if (waistInput) {
+                            waistInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            setTimeout(() => waistInput.focus(), 400);
+                        }
+                    }
+                });
+                return;
+            }
+
+            // 若所有欄位（含腰圍）皆已填寫，直接執行提交
+            processSubmission(formData);
+        };
+
+        async function processSubmission(formData) {
             // 狀態變更為傳送中
             const submitBtn = document.getElementById('submitBtn');
             const originalBtnHtml = submitBtn.innerHTML;
@@ -485,6 +605,7 @@
             submitBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> 資料分析與傳送中...`;
 
             const userData = {
+                recordId: currentRecordId,
                 userName: formData.get('userName'),
                 userAge: formData.get('userAge'),
                 medicalId: formData.get('medicalId'),
@@ -515,7 +636,7 @@
             let currentDisplay = 0;
             const targetScore = totalScore;
             const duration = 1500;
-            const stepTime = Math.max(16, Math.floor(duration / targetScore));
+            const stepTime = Math.max(16, Math.floor(duration / Math.max(1, targetScore)));
             
             const timer = setInterval(() => {
                 currentDisplay++;
@@ -528,6 +649,8 @@
 
             const circle = document.getElementById('score-circle');
             const circumference = 565.48;
+            // 重設圓環顏色為預設藍，避免多次修改時殘留前次顏色
+            circle.setAttribute('class', 'text-blue-500 transition-all duration-1500 ease-out');
             setTimeout(() => {
                 circle.style.strokeDashoffset = circumference - (totalScore / 50) * circumference;
             }, 100);
@@ -692,15 +815,23 @@
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
                 }).then(() => {
-                    showToast("✅ 評估資料已成功同步至試算表！");
+                    if (isEditingMode) {
+                        showToast("✅ 修改後的評估資料已成功更新至試算表！");
+                    } else {
+                        showToast("✅ 評估資料已成功同步至試算表！");
+                    }
                 }).catch(err => {
                     console.error("Transmission error:", err);
                     showToast("⚠️ 資料同步時發生異常，但結果已為您產出。");
                 }).finally(() => {
+                    submitBtn.disabled = false;
                     submitBtn.innerHTML = originalBtnHtml; // 還原按鈕狀態
                 });
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
             }
-        };
+        }
     </script>
 </body>
 </html>
